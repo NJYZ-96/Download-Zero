@@ -1,0 +1,21 @@
+services:
+  download-zero:
+    container_name: Download-Zero
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM alpine:latest
+        # 安装必要工具：curl(下载/推送), bc(数学计算)
+        RUN apk add --no-cache curl bc
+        WORKDIR /app
+        COPY run.sh /app/run.sh
+        RUN chmod +x /app/run.sh
+        ENTRYPOINT ["/bin/sh", "/app/run.sh"]
+    env_file:
+      - .env
+    restart: unless-stopped
+    # 限制容器资源占用
+    deploy:
+      resources:
+        limits:
+          memory: 64M
